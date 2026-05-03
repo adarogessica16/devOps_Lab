@@ -45,7 +45,7 @@ export default function App() {
     refresh();
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     toast('confirm', '¿Eliminar este gasto?', async () => {
       try {
         await api.deleteExpense(id);
