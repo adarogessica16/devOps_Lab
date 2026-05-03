@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: devops-lab
+  labels:
+    app: backend
+spec:
+  # ClusterIP: el frontend lo llama internamente como http://backend-service:3000
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

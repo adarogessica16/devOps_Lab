@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: devops-lab
+  labels:
+    app: frontend
+spec:
+  # NodePort: expone el frontend fuera del clúster
+  # Acceso: minikube service frontend-service -n devops-lab --url
+  type: NodePort
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080   # Puerto accesible desde el host (rango 30000-32767)

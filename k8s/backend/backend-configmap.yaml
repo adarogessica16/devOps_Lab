@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: devops-lab
+data:
+  # Configuración no sensible del backend
+  PORT: "3000"
+  NODE_ENV: "production"
+  # db-service es el nombre del Service interno de PostgreSQL
+  DATABASE_URL: "postgresql://postgres:1234@db-service:5432/registro_gastos"
