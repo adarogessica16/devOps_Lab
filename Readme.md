@@ -64,8 +64,11 @@ kubectl get nodes
 ```bash
 kubectl apply -f k8s/namespace/namespace.yaml
 
-# Verificar
+# Verificar 
 kubectl get namespaces | grep devops-lab
+
+#Verificar en caso de Windows  PowerShell
+kubectl get namespaces | Select-String devops-lab
 ```
 
 ---
@@ -119,6 +122,9 @@ kubectl get service db-service -n devops-lab
 ```bash
 # Apuntar Docker al daemon de Minikube (las imágenes quedan disponibles en el clúster)
 eval $(minikube docker-env)
+
+#En caso de Window con PowerShell usar
+minikube docker-env --shell powershell | Invoke-Expression
 
 # Construir la imagen
 docker build -t registro-gastos-backend:1.0 ./backend
@@ -190,6 +196,10 @@ kubectl get service frontend-service -n devops-lab
 minikube service frontend-service -n devops-lab --url
 # Abre la URL que devuelve en el navegador
 ```
+
+```bash
+kubectl port-forward deployment/backend-deployment 3000:3000 -n devops-lab
+# Abre la URL del backend con http://localhost:3000/api-docs/
 
 ---
 
