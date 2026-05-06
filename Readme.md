@@ -278,15 +278,3 @@ kubectl delete namespace devops-lab
 # Detener Minikube
 minikube stop
 ```
-
----
-
-## Problemas comunes y soluciones
-
-| Problema | Causa probable | Solución |
-|----------|---------------|----------|
-| `ImagePullBackOff` | Imagen no encontrada en Minikube | Ejecutar `eval $(minikube docker-env)` y reconstruir |
-| `CrashLoopBackOff` | App falla al iniciar | Ver `kubectl logs <pod> -n devops-lab` |
-| `Pending` en pods | Sin recursos disponibles | Ver `kubectl describe pod <pod> -n devops-lab` |
-| DB no conecta | Service mal configurado | Verificar que el nombre del service coincida con `DATABASE_URL` |
-| Frontend no carga la API | Nginx no está haciendo proxy | Verificar `nginx.conf` y reconstruir imagen |
