@@ -200,7 +200,7 @@ minikube service frontend-service -n devops-lab --url
 ```bash
 kubectl port-forward deployment/backend-deployment 3000:3000 -n devops-lab
 # Abre la URL del backend con http://localhost:3000/api-docs/
-
+```
 ---
 
 ### Parte 5: Validación
