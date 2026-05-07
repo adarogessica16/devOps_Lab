@@ -203,7 +203,7 @@ kubectl port-forward deployment/backend-deployment 3000:3000 -n devops-lab
 
 ---
 
-## Parte 5: Validación
+### Parte 5: Validación
 
 ```bash
 # Ver todos los pods del namespace
