@@ -38,14 +38,13 @@ spec:
                 secretKeyRef:
                   name: db-secret
                   key: POSTGRES_PASSWORD
-            - name: DB_NAME          # ← agregar esto
+            - name: DB_NAME
               valueFrom:
                 secretKeyRef:
                   name: db-secret
                   key: POSTGRES_DB
             - name: DATABASE_URL
               value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
-              
           readinessProbe:
             httpGet:
               path: /health

@@ -203,7 +203,7 @@ kubectl port-forward deployment/backend-deployment 3000:3000 -n devops-lab
 ```
 ---
 
-### Parte 5: Validación
+## Parte 5: Validación
 
 ```bash
 # Ver todos los pods del namespace
@@ -217,6 +217,14 @@ kubectl get all -n devops-lab
 
 # Ver logs de un pod específico
 kubectl logs <nombre-del-pod> -n devops-lab
+
+# Conectarse a la base de datos y ver tablas
+kubectl exec -it <nombre-pod-postgres> -n devops-lab -- psql -U postgres -d registro_gastos
+# Una vez dentro de psql:
+# \dt           → ver todas las tablas
+# \d gastos     → ver estructura de la tabla
+# SELECT * FROM gastos;  → ver datos
+# \q            → salir
 
 # Probar conexión al backend desde dentro del clúster
 kubectl run test-curl --image=curlimages/curl -it --rm --restart=Never \
