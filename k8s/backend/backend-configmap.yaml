@@ -7,5 +7,5 @@ data:
   # Configuración no sensible del backend
   PORT: "3000"
   NODE_ENV: "production"
-  # db-service es el nombre del Service interno de PostgreSQL
-  DATABASE_URL: "postgresql://postgres:1234@db-service:5432/registro_gastos"
+  DB_HOST: "db-service"
+  DB_PORT: "5432"

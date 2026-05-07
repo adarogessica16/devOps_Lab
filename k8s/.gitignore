@@ -1,0 +1,9 @@
+# Kubernetes Secrets (información sensible)
+database/db-secret.yaml
+backend/backend-secret.yaml
+**/*-secret.yaml
+*.secret.yaml
+
+# Excluir archivos de ejemplo 
+!*.example.yaml
+!**/*.example.yaml

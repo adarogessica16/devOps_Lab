@@ -200,7 +200,7 @@ minikube service frontend-service -n devops-lab --url
 ```bash
 kubectl port-forward deployment/backend-deployment 3000:3000 -n devops-lab
 # Abre la URL del backend con http://localhost:3000/api-docs/
-
+```
 ---
 
 ## Parte 5: Validación
@@ -217,6 +217,14 @@ kubectl get all -n devops-lab
 
 # Ver logs de un pod específico
 kubectl logs <nombre-del-pod> -n devops-lab
+
+# Conectarse a la base de datos y ver tablas
+kubectl exec -it <nombre-pod-postgres> -n devops-lab -- psql -U postgres -d registro_gastos
+# Una vez dentro de psql:
+# \dt           → ver todas las tablas
+# \d gastos     → ver estructura de la tabla
+# SELECT * FROM gastos;  → ver datos
+# \q            → salir
 
 # Probar conexión al backend desde dentro del clúster
 kubectl run test-curl --image=curlimages/curl -it --rm --restart=Never \
@@ -288,15 +296,3 @@ kubectl delete namespace devops-lab
 # Detener Minikube
 minikube stop
 ```
-
----
-
-## Problemas comunes y soluciones
-
-| Problema | Causa probable | Solución |
-|----------|---------------|----------|
-| `ImagePullBackOff` | Imagen no encontrada en Minikube | Ejecutar `eval $(minikube docker-env)` y reconstruir |
-| `CrashLoopBackOff` | App falla al iniciar | Ver `kubectl logs <pod> -n devops-lab` |
-| `Pending` en pods | Sin recursos disponibles | Ver `kubectl describe pod <pod> -n devops-lab` |
-| DB no conecta | Service mal configurado | Verificar que el nombre del service coincida con `DATABASE_URL` |
-| Frontend no carga la API | Nginx no está haciendo proxy | Verificar `nginx.conf` y reconstruir imagen |
