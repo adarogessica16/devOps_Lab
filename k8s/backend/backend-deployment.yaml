@@ -25,6 +25,27 @@ spec:
           envFrom:
             - configMapRef:
                 name: backend-config
+          # Variables de entorno sensibles desde el Secret
+          # contruyen DATABASE_URL usando DB_USER y DB_PASSWORD del Secret
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_PASSWORD
+            - name: DB_NAME          # ← agregar esto
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: POSTGRES_DB
+            - name: DATABASE_URL
+              value: "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)"
+              
           readinessProbe:
             httpGet:
               path: /health
