@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         DOCKER_HOST     = 'tcp://172.30.5.101:2375'
-        BACKEND_IMAGE   = 'adarogessica16/devops-lab-backend'
-        FRONTEND_IMAGE  = 'adarogessica16/devops-lab-frontend'
+        BACKEND_IMAGE   = 'catascheid/devops-lab-backend'
+        FRONTEND_IMAGE  = 'catascheid/devops-lab-frontend'
         DOCKERHUB_CREDS = credentials('dockerhub-credentials')
     }
 
@@ -59,9 +59,7 @@ pipeline {
 
     post {
         success {
-            echo "Imágenes publicadas en Docker Hub"
-            echo "   ${BACKEND_IMAGE}:${BUILD_NUMBER}"
-            echo "   ${FRONTEND_IMAGE}:${BUILD_NUMBER}"
+            echo "Imágenes publicadas: ${BACKEND_IMAGE}:${BUILD_NUMBER}"
         }
         failure {
             echo "Pipeline Docker fallido"
