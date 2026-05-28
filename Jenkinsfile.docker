@@ -1,0 +1,75 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HOST     = 'tcp://172.30.5.101:2375'
+        BACKEND_IMAGE   = 'adarogessica16/devops-lab-backend'
+        FRONTEND_IMAGE  = 'adarogessica16/devops-lab-frontend'
+        DOCKERHUB_CREDS = credentials('dockerhub-credentials')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Docker - Build Backend') {
+            steps {
+                sh '''
+                    DOCKER_HOST=${DOCKER_HOST} docker build \
+                        -t ${BACKEND_IMAGE}:${BUILD_NUMBER} \
+                        -t ${BACKEND_IMAGE}:latest \
+                        ./backend
+                '''
+            }
+        }
+
+        stage('Docker - Build Frontend') {
+            steps {
+                sh '''
+                    DOCKER_HOST=${DOCKER_HOST} docker build \
+                        -t ${FRONTEND_IMAGE}:${BUILD_NUMBER} \
+                        -t ${FRONTEND_IMAGE}:latest \
+                        ./frontend
+                '''
+            }
+        }
+
+        stage('Docker - Push a Docker Hub') {
+            steps {
+                sh '''
+                    echo "${DOCKERHUB_CREDS_PSW}" | \
+                        DOCKER_HOST=${DOCKER_HOST} docker login \
+                        -u "${DOCKERHUB_CREDS_USR}" --password-stdin
+
+                    DOCKER_HOST=${DOCKER_HOST} docker push ${BACKEND_IMAGE}:${BUILD_NUMBER}
+                    DOCKER_HOST=${DOCKER_HOST} docker push ${BACKEND_IMAGE}:latest
+
+                    DOCKER_HOST=${DOCKER_HOST} docker push ${FRONTEND_IMAGE}:${BUILD_NUMBER}
+                    DOCKER_HOST=${DOCKER_HOST} docker push ${FRONTEND_IMAGE}:latest
+
+                    DOCKER_HOST=${DOCKER_HOST} docker logout
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Imágenes publicadas en Docker Hub"
+            echo "   ${BACKEND_IMAGE}:${BUILD_NUMBER}"
+            echo "   ${FRONTEND_IMAGE}:${BUILD_NUMBER}"
+        }
+        failure {
+            echo "Pipeline Docker fallido"
+        }
+        always {
+            sh "DOCKER_HOST=${DOCKER_HOST} docker image prune -f || true"
+            cleanWs()
+        }
+    }
+}
+
+
