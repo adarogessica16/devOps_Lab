@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
-                echo "Rama: ${env.BRANCH_NAME}"
+                git branch: 'dev',
+                    url: 'https://github.com/adarogessica16/devOps_Lab.git'
             }
         }
 
@@ -42,7 +42,7 @@ pipeline {
 
     post {
         success {
-            // Dispara el Pipeline 2 automáticamente
+            echo "Build #${BUILD_NUMBER} exitoso — disparando pipeline Docker"
             build job: 'devops-lab-docker', wait: false
         }
         failure {

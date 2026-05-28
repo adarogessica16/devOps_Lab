@@ -11,7 +11,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'dev',
+                    url: 'https://github.com/adarogessica16/devOps_Lab.git'
             }
         }
 
@@ -71,5 +72,3 @@ pipeline {
         }
     }
 }
-
-
