@@ -1,6 +1,6 @@
 # Registro de Gastos — Kubernetes Local
 
-Aplicación multicapa (Frontend + Backend + PostgreSQL) desplegada en Kubernetes local con Minikube..
+Aplicación multicapa (Frontend + Backend + PostgreSQL) desplegada en Kubernetes local con Minikube.
 
 ---
 
