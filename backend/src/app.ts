@@ -16,6 +16,10 @@ app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/expenses', expenseRouter);
 
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 app.get('/version', (_req, res) => {
   res.json({
     version: process.env.npm_package_version ?? '1.0.0',
