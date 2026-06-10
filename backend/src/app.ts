@@ -20,6 +20,14 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+app.get('/version', (_req, res) => {
+  res.json({
+    version: process.env.npm_package_version ?? '1.0.0',
+    app: 'registro-gastos-backend',
+    environment: process.env.NODE_ENV ?? 'production'
+  });
+});
+
 app.use(notFound);
 app.use(errorHandler);
 
