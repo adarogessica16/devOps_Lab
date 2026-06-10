@@ -18,8 +18,8 @@ spec:
       containers:
         - name: backend
           image: registro-gastos-backend:1.0
-          # Never: usa la imagen cargada localmente en Minikube (no intenta descargarla)
-          imagePullPolicy: Never
+          # Always: descarga la imagen desde Docker Hub
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           envFrom:

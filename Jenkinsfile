@@ -1,55 +1,79 @@
 pipeline {
     agent any
 
+    environment {
+        BACKEND_IMAGE  = "adarogessi/registro-gastos-backend"
+        FRONTEND_IMAGE = "adarogessi/registro-gastos-frontend"
+        IMAGE_TAG      = "${BUILD_NUMBER}"
+    }
+
     stages {
+
         stage('Checkout') {
             steps {
-                git branch: 'dev',
-                    url: 'https://github.com/adarogessica16/devOps_Lab.git'
+                checkout scm
             }
         }
 
-        stage('Backend - Install') {
+        stage('Build Backend') {
             steps {
-                dir('backend') { sh 'npm ci' }
+                dir('backend') {
+                    sh 'npm ci'
+                    sh 'npm run build'
+                }
             }
         }
 
-        stage('Backend - Generate Prisma') {
+        stage('Build Frontend') {
             steps {
-                dir('backend') { sh 'npx prisma generate' }
+                dir('frontend') {
+                    sh 'npm ci'
+                    sh 'npm run build'
+                }
             }
         }
 
-        stage('Backend - Build') {
+        stage('Docker Build & Push') {
             steps {
-                dir('backend') { sh 'npm run build' }
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-hub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh "docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} ./backend"
+                    sh "docker push ${BACKEND_IMAGE}:${IMAGE_TAG}"
+                    sh "docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} ./frontend"
+                    sh "docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}"
+                }
             }
         }
 
-        stage('Frontend - Install') {
+        stage('Deploy to Kubernetes') {
             steps {
-                dir('frontend') { sh 'npm ci' }
-            }
-        }
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh """
+                        kubectl set image deployment/backend-deployment \
+                          backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
+                          -n devops-lab --kubeconfig=$KUBECONFIG
 
-        stage('Frontend - Build') {
-            steps {
-                dir('frontend') { sh 'npm run build' }
+                        kubectl rollout status deployment/backend-deployment \
+                          -n devops-lab --kubeconfig=$KUBECONFIG
+                    """
+                }
             }
         }
     }
 
     post {
+        always {
+            sh 'docker logout'
+        }
         success {
-            echo "Build #${BUILD_NUMBER} exitoso — disparando pipeline Docker"
-            build job: 'devops-lab-docker', wait: false
+            echo " Deploy ${IMAGE_TAG} exitoso"
         }
         failure {
-            echo "Build #${BUILD_NUMBER} fallido"
-        }
-        always {
-            cleanWs()
+            echo "Pipeline falló en stage: ${STAGE_NAME}"
         }
     }
 }
