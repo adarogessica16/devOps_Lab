@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        BACKEND_IMAGE  = "adarogessi/registro-gastos-backend"
-        FRONTEND_IMAGE = "adarogessi/registro-gastos-frontend"
+        BACKEND_IMAGE  = "catascheid/registro-gastos-backend"
+        FRONTEND_IMAGE = "catascheid/registro-gastos-frontend"
         IMAGE_TAG      = "${BUILD_NUMBER}"
     }
 
