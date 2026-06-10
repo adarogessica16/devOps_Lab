@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: lourdesvalenzuela/registros-gastos-frontend:latest
+          image: registro-gastos-frontend:1.0
           imagePullPolicy: Always
           ports:
             - containerPort: 80
