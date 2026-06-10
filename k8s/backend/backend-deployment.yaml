@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: lourdesvalenzuela/registros-gastos-backend:latest
+          image: registros-gastos-backend:1.0
           # Always: descarga la imagen desde Docker Hub
           imagePullPolicy: Always
           ports:
