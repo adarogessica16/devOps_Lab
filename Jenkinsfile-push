@@ -1,0 +1,86 @@
+pipeline {
+    agent any
+
+    environment {
+        BACKEND_IMAGE  = "lourdesvalenzuela/registros-gastos-backend"
+        FRONTEND_IMAGE = "lourdesvalenzuela/registros-gastos-frontend"
+        IMAGE_TAG      = "${BUILD_NUMBER}"
+        KUBECONFIG     = "/var/jenkins_home/.kube/config"
+        NAMESPACE      = "devops-lab"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'devopsv2',
+                    url: 'https://github.com/adarogessica16/devOps_Lab.git'
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-hub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+
+                    sh "docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} ./backend"
+                    sh "docker push ${BACKEND_IMAGE}:${IMAGE_TAG}"
+
+                    sh "docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} ./frontend"
+                    sh "docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}"
+                }
+            }
+        }
+
+        stage('Deploy en Kubernetes') {
+            steps {
+                sh """
+                    kubectl set image deployment/backend-deployment \
+                        backend=${BACKEND_IMAGE}:${IMAGE_TAG} \
+                        -n ${NAMESPACE}
+
+                    kubectl set image deployment/frontend-deployment \
+                        frontend=${FRONTEND_IMAGE}:${IMAGE_TAG} \
+                        -n ${NAMESPACE}
+
+                    kubectl rollout status deployment/backend-deployment -n ${NAMESPACE}
+                    kubectl rollout status deployment/frontend-deployment -n ${NAMESPACE}
+                """
+            }
+        }
+
+        stage('Validacion') {
+            steps {
+                sh """
+                    echo '=== Pods activos ==='
+                    kubectl get pods -n ${NAMESPACE}
+
+                    echo '=== Servicios ==='
+                    kubectl get services -n ${NAMESPACE}
+
+                    echo '=== Verificando backend /health ==='
+                    kubectl run test-health --image=curlimages/curl \
+                        --restart=Never --rm -it \
+                        -n ${NAMESPACE} \
+                        -- curl -sf http://backend-service:3000/health && echo 'OK' || echo 'FALLO'
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker logout'
+        }
+        success {
+            echo "Deploy exitoso - imagen tag: ${IMAGE_TAG}"
+        }
+        failure {
+            echo "Pipeline fallido - revisá los logs"
+        }
+    }
+}
