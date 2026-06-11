@@ -459,5 +459,4 @@ minikube stop
 | `kubeconfig` apuntaba a `127.0.0.1:8080` | Usar `--flatten` y reemplazar IP por la de Minikube (`192.168.49.2:8443`) |
 | `ErrImageNeverPull` en pods | Cambiar `imagePullPolicy: Never` → `Always` |
 | `exceeded its progress deadline` | Aumentar `progressDeadlineSeconds` a 300 e `initialDelaySeconds` del readiness probe |
-| `/health` retornaba 404 | El endpoint fue eliminado accidentalmente al agregar `/version`; se restauró |
 | Grafana sin datos en dashboards | Usar Explore con query PromQL directa |
