@@ -6,24 +6,15 @@ import { swaggerSpec } from './docs/swagger';
 import { expenseRouter } from './routes/expenses.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
-import client from 'prom-client';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
-// Métricas de Prometheus
-const register = new client.Registry();
-client.collectDefaultMetrics({ register });
-
 app.use(cors());
 app.use(express.json());
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/expenses', expenseRouter);
-
-app.get('/metrics', async (_req, res) => {
-  res.set('Content-Type', register.contentType);
-  res.send(await register.metrics());
-});
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
